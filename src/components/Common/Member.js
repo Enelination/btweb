@@ -12,10 +12,10 @@ class Member extends Component {
           />
           <h4>{this.props.name}</h4>
           <p className="text-muted">{this.props.role}</p>
-          <ul className="list-inline social-buttons">
-            <li className="list-inline-item">
+          <ul className="list-inline social-buttons ">
+            <li className="list-inline-item ">
               <a href="#">
-                <i className="fab fa-twitter"></i>
+                <i className="fab fa-twitter "></i>
               </a>
             </li>
             <li className="list-inline-item">
