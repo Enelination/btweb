@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import Field from "../Common/Field";
 
+import { withFormik } from "formik";
+import * as Yup from "yup";
+
 const fields = {
   sections: [
     [
@@ -34,22 +37,7 @@ const fields = {
   ],
 };
 
-export default class Contact extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      name: "",
-      email: "",
-      phone: "",
-      message: "",
-    };
-  }
-
-  submitForm = (e) => {
-    e.preventDefault();
-    alert("Form Submitted");
-  };
+class Contact extends Component {
   render() {
     return (
       <section className="page-section" id="contact">
@@ -64,7 +52,7 @@ export default class Contact extends Component {
             id="contactForm"
             name="sentMessage"
             novalidate="novalidate"
-            onSubmit={(e) => this.submitForm(e)}
+            onSubmit={this.props.handleSubmit}
           >
             <div className="row align-items-stretch mb-5">
               {fields.sections.map((section, sectionIndex) => {
@@ -75,10 +63,12 @@ export default class Contact extends Component {
                         <Field
                           {...field}
                           key={i}
-                          value={this.state[field.name]}
-                          onChange={(e) =>
-                            this.setState({ [field.name]: e.target.value })
-                          }
+                          value={this.props.values[field.name]}
+                          name={field.name}
+                          onChange={this.props.handleChange}
+                          onBlur={this.props.handleBlur}
+                          touched={this.props.touched[field.name]}
+                          errors={this.props.errors[field.name]}
                         />
                       );
                     })}
@@ -102,3 +92,38 @@ export default class Contact extends Component {
     );
   }
 }
+export default withFormik({
+  mapPropsToValues: () => ({
+    name: "",
+    email: "",
+    message: "",
+    phone: "",
+  }),
+  // validate: (values) => {
+  //   const errors = {};
+  //   Object.keys(values).map((v) => {
+  //     if (!values[v]) {
+  //       errors[v] = "Required";
+  //     }
+  //   });
+  //   return errors;
+  // },
+  validationSchema: Yup.object().shape({
+    name: Yup.string()
+      .min(3, "name too short")
+      .required("You must give us your name"),
+    email: Yup.string()
+      .email("email invalid")
+      .required("please provide an email"),
+    phone: Yup.string()
+      .min(10, "please check phone number")
+      .max(15, "phone number too long")
+      .required("we need your phone number"),
+    message: Yup.string()
+      .min(500, "you need to provide more information")
+      .required("message is required"),
+  }),
+  handleSubmit: (values, { setSubmitting }) => {
+    alert("form has been submitted", JSON.stringify(values));
+  },
+})(Contact);
